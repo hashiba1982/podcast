@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.podcast.R
 import com.example.podcast.ui.adapter.HomeAdapter
@@ -42,8 +43,10 @@ class HomeFragment : Fragment() {
     private fun initView(){
         var gridLayoutManager = GridLayoutManager(context, 2)
         mAdapter = HomeAdapter(requireContext(), object :HomeAdapter.OnAdapterClickListener{
-            override fun OnItemClick(view: View?, position: Int) {
-
+            override fun OnItemClick(view: View?, id: String) {
+                val bundle = Bundle()
+                bundle.putString("cast_id", id)
+                Navigation.findNavController(view!!).navigate(R.id.action_navigation_home_to_musiclist, bundle)
             }
         })
         rv_casts.layoutManager = gridLayoutManager

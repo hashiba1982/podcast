@@ -21,7 +21,7 @@ class HomeAdapter(context: Context, val adapterClickListener: OnAdapterClickList
     var mDataSet: ArrayList<Podcast> = ArrayList()
 
     interface OnAdapterClickListener{
-        fun OnItemClick(view: View?, position: Int)
+        fun OnItemClick(view: View?, id: String)
     }
 
     fun swapDataSet(tempSet: ArrayList<Podcast>) {
@@ -42,7 +42,7 @@ class HomeAdapter(context: Context, val adapterClickListener: OnAdapterClickList
             adapterClick = adapterClickListener
 
             holder.itemView.setOnClickListener {
-                adapterClick?.OnItemClick(it, position)
+                adapterClick?.OnItemClick(it, mDataSet[position].id)
             }
         }
 

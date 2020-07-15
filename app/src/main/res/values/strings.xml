@@ -1,4 +1,5 @@
 <resources>
 	<string name="app_name">PodCast</string>
 	<string name="title_home">Casts</string>
+	<string name="all_episodes">ALL EPISODES</string>
 </resources>

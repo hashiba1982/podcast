@@ -27,7 +27,6 @@ class HomeViewModel(context:Context) : BaseViewModel() {
             var castsResponse = RetrofitClient().create().getCastsResponse()
             verifyResponse(castsResponse){
                 castDataSet.value = castsResponse.data?.podcast
-
             }
 
         },{

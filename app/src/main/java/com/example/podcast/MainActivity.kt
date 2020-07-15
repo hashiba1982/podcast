@@ -19,4 +19,12 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController, appBarConfiguration)
     }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = this.findNavController(R.id.nav_host_fragment)
+        if(!navController.navigateUp()){ // When in start destination
+            onBackPressed()
+        }
+        return navController.navigateUp()
+    }
 }

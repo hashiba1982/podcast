@@ -1,10 +1,9 @@
 package com.secretdiary.studio.config.network
 
 import android.net.ParseException
+import com.example.podcast.MainApplication
 import com.google.gson.JsonParseException
 import com.google.gson.stream.MalformedJsonException
-import com.secretdiary.studio.R
-import com.secretdiary.studio.main.MainApplication
 import org.json.JSONException
 import retrofit2.HttpException
 import java.net.ConnectException
@@ -30,7 +29,7 @@ object ExceptionHandle {
         } else if (e is SocketTimeoutException) {
             ex = ResponseThrowable(5000, e.message!!)
         } else if (e is UnknownHostException) {
-            ex = ResponseThrowable(6000, MainApplication.applicationContext().getString(R.string.sdtxt_169))
+            ex = ResponseThrowable(6000, "API ERROR")
         } else if (e is ApiException) {
             ex = ResponseThrowable(e.code, e.message!!)
         } else {

@@ -7,9 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
 import com.example.podcast.R
+import com.example.podcast.tools.debug
 import com.example.podcast.tools.loadUrl
 import com.example.podcast.vm.MusicListViewModel
 import com.google.android.exoplayer2.*
@@ -26,7 +26,6 @@ import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.fragment_music_player.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
-import kotlin.concurrent.thread
 
 class MusicPlayerFragment : Fragment() {
 
@@ -59,10 +58,10 @@ class MusicPlayerFragment : Fragment() {
 
         iv_play.setOnClickListener {
             if (isPlaying) {
-                iv_play.setImageResource(R.drawable.exo_controls_pause)
+                iv_play.setImageResource(R.drawable.exo_controls_play)
                 isPlaying = false
             } else {
-                iv_play.setImageResource(R.drawable.exo_controls_play)
+                iv_play.setImageResource(R.drawable.exo_controls_pause)
                 isPlaying = true
             }
         }
@@ -116,10 +115,10 @@ class MusicPlayerFragment : Fragment() {
                     Player.STATE_READY -> {
                         //progress_image?.visibility = View.GONE
                         //mVideoListener?.OnVideoReady()
-                        iv_play.setImageResource(R.drawable.exo_controls_play)
+                        iv_play.setImageResource(R.drawable.exo_controls_pause)
                         isPlaying = true
 
-                        setTimer()
+                        setMusicTime()
                         setSeekBar()
                     }
                     Player.STATE_ENDED -> {
@@ -128,35 +127,6 @@ class MusicPlayerFragment : Fragment() {
                 }
             }
         })
-    }
-
-    private fun initSeekbar() {
-        seekBar.progress = simpleExoplayer?.currentPosition!!.toInt() / 1000
-        seekBar.max = simpleExoplayer?.duration!!.toInt() / 1000
-
-        Handler().post {
-            seekBar.progress = simpleExoplayer?.currentPosition!!.toInt() / 1000
-            seekBar.max = simpleExoplayer?.duration!!.toInt() / 1000
-        }
-/*        playProgressBar.progress = (exoPlayer?.currentPosition?.toInt() ?:0) / 1000
-        playProgressBar.max = (exoPlayer?.duration?.toInt() ?: 0) / 1000
-        playingTime.text = stringForTime(exoPlayer?.currentPosition?.toInt()?: 0)
-        totalTime.text = stringForTime(exoPlayer?.duration?.toInt()?: 0)
-        handler?.let {  } ?: kotlin.run {
-            handler = Handler()
-        }
-        handler?.post(object : Runnable {
-            override fun run() {
-                if (exoPlayer != null && isPlaying) {
-                    playProgressBar.max = exoPlayer?.duration?.toInt()?:0 / 1000
-                    val mCurrentPosition = exoPlayer?.currentPosition?.toInt()?:0 / 1000
-                    playProgressBar.progress = mCurrentPosition
-                    playingTime.text = stringForTime(exoPlayer?.currentPosition?.toInt()?:0)
-                    totalTime.text = stringForTime(exoPlayer?.duration?.toInt()?:0)
-                    handler?.postDelayed(this, 1000)
-                }
-            }
-        })*/
     }
 
     private fun setSeekBar() {
@@ -171,15 +141,32 @@ class MusicPlayerFragment : Fragment() {
         })
     }
 
+    private fun makeTimeString(secs: Int): String? {
 
-    private fun setTimer() {
+
+        var sFormatBuilder = StringBuilder()
+        var sFormatter = Formatter(sFormatBuilder, Locale.getDefault())
+
+        val durationformat = getString(R.string.conver_time)
+
+        //var totalSec = secs / 1000
+
+        var sec = secs / 3600 // 秒
+        var minute = secs % 3600 / 60 // 分
+        var hour = secs % 3600 % 60 % 60 // 時
+
+        return sFormatter.format(durationformat, sec, minute, hour).toString().trim()
+    }
+
+    private fun setMusicTime() {
 
         runnable = object :Runnable{
             override fun run() {
                 val durationSecond = (simpleExoplayer!!.duration / 1000).toInt()
                 val currentSecond = (simpleExoplayer!!.currentPosition / 1000).toInt()
 
-                tv_timeEnd.text = "$currentSecond/$durationSecond"
+                tv_timeEnd.text = makeTimeString(durationSecond)
+                tv_timeStart.text = makeTimeString(currentSecond)
                 seekBar.max = durationSecond
                 seekBar.progress = currentSecond
                 handler.postDelayed(this, 1000)

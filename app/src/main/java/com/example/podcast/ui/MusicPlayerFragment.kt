@@ -131,12 +131,16 @@ class MusicPlayerFragment : Fragment() {
 
     private fun setSeekBar() {
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {}
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (progress == 0 || seekBar?.max == 0) return
+                var pos = progress * 1000
+                simpleExoplayer?.seekTo(pos.toLong())
+            }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                simpleExoplayer?.seekTo(seekBar?.progress!!.toLong())
+
             }
         })
     }
@@ -162,14 +166,16 @@ class MusicPlayerFragment : Fragment() {
 
         runnable = object :Runnable{
             override fun run() {
-                val durationSecond = (simpleExoplayer!!.duration / 1000).toInt()
-                val currentSecond = (simpleExoplayer!!.currentPosition / 1000).toInt()
+                if (simpleExoplayer != null){
+                    val durationSecond = (simpleExoplayer!!.duration / 1000).toInt()
+                    val currentSecond = (simpleExoplayer!!.currentPosition / 1000).toInt()
 
-                tv_timeEnd.text = makeTimeString(durationSecond)
-                tv_timeStart.text = makeTimeString(currentSecond)
-                seekBar.max = durationSecond
-                seekBar.progress = currentSecond
-                handler.postDelayed(this, 1000)
+                    tv_timeEnd.text = makeTimeString(durationSecond)
+                    tv_timeStart.text = makeTimeString(currentSecond)
+                    seekBar.max = durationSecond
+                    seekBar.progress = currentSecond
+                    handler.postDelayed(this, 1000)
+                }
             }
         }
         handler.post(runnable)
@@ -185,9 +191,22 @@ class MusicPlayerFragment : Fragment() {
         return ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        if (simpleExoplayer != null) {
+            simpleExoplayer?.playWhenReady = true
+        }
+    }
+
     override fun onPause() {
         super.onPause()
-        simpleExoplayer?.release()
+
+        handler.removeCallbacks(runnable)
+
+        if (simpleExoplayer != null) {
+            simpleExoplayer?.playWhenReady = false
+        }
     }
 
     override fun onDestroy() {

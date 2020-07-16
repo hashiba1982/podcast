@@ -2,11 +2,15 @@ package com.example.podcast.ui
 
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
+import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
 import com.example.podcast.R
+import com.example.podcast.tools.loadUrl
 import com.example.podcast.vm.MusicListViewModel
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ExtractorMediaSource
@@ -21,17 +25,22 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.fragment_music_player.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import java.util.*
+import kotlin.concurrent.thread
 
 class MusicPlayerFragment : Fragment() {
 
-    private val musicListViewModel:MusicListViewModel by sharedViewModel()
+    private val musicListViewModel: MusicListViewModel by sharedViewModel()
 
     private var simpleExoplayer: SimpleExoPlayer? = null
+    private var isPlaying: Boolean = false
+    private var handler: Handler = Handler()
+    private var runnable:Runnable? = null
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_music_player, container, false)
         return root
@@ -44,11 +53,22 @@ class MusicPlayerFragment : Fragment() {
         initExoPlayer()
     }
 
-    private fun initView(){
+    private fun initView() {
         tv_musicTitle.text = musicListViewModel.getSelectedMusic().title
+        iv_castBigImage.loadUrl(musicListViewModel.collection.value!!.artworkUrl600)
+
+        iv_play.setOnClickListener {
+            if (isPlaying) {
+                iv_play.setImageResource(R.drawable.exo_controls_pause)
+                isPlaying = false
+            } else {
+                iv_play.setImageResource(R.drawable.exo_controls_play)
+                isPlaying = true
+            }
+        }
     }
 
-    private fun initExoPlayer(){
+    private fun initExoPlayer() {
         simpleExoplayer = ExoPlayerFactory.newSimpleInstance(
             DefaultRenderersFactory(context),
             DefaultTrackSelector(AdaptiveTrackSelection.Factory(DefaultBandwidthMeter())),
@@ -57,17 +77,22 @@ class MusicPlayerFragment : Fragment() {
 
         simpleExoplayer?.seekToDefaultPosition()
 
-        var mediaSource = buildMediaSource(Uri.parse(musicListViewModel.getSelectedMusic().contentUrl))
+        var mediaSource =
+            buildMediaSource(Uri.parse(musicListViewModel.getSelectedMusic().contentUrl))
         var loopingSource = LoopingMediaSource(mediaSource)
         simpleExoplayer?.prepare(loopingSource)
 
         simpleExoplayer?.playWhenReady = true
-        simpleExoplayer?.addListener(object : Player.EventListener{
+        simpleExoplayer?.addListener(object : Player.EventListener {
             override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {}
 
             override fun onSeekProcessed() {}
 
-            override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {}
+            override fun onTracksChanged(
+                trackGroups: TrackGroupArray?,
+                trackSelections: TrackSelectionArray?
+            ) {
+            }
 
             override fun onPlayerError(error: ExoPlaybackException?) {
                 //mVideoListener?.OnVideoError()
@@ -84,13 +109,18 @@ class MusicPlayerFragment : Fragment() {
             override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {}
 
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                when(playbackState) {
+                when (playbackState) {
                     Player.STATE_BUFFERING -> {
                         //progress_image?.visibility = View.VISIBLE
                     }
                     Player.STATE_READY -> {
                         //progress_image?.visibility = View.GONE
                         //mVideoListener?.OnVideoReady()
+                        iv_play.setImageResource(R.drawable.exo_controls_play)
+                        isPlaying = true
+
+                        setTimer()
+                        setSeekBar()
                     }
                     Player.STATE_ENDED -> {
                         //mVideoListener?.OnVideoFinish()
@@ -100,13 +130,87 @@ class MusicPlayerFragment : Fragment() {
         })
     }
 
-    private fun buildMediaSource(uri: Uri) : MediaSource {
-        val dataSourceFactory = DefaultDataSourceFactory(requireContext(), Util.getUserAgent(requireContext(), "ExoplayerSample"), DefaultBandwidthMeter())
+    private fun initSeekbar() {
+        seekBar.progress = simpleExoplayer?.currentPosition!!.toInt() / 1000
+        seekBar.max = simpleExoplayer?.duration!!.toInt() / 1000
+
+        Handler().post {
+            seekBar.progress = simpleExoplayer?.currentPosition!!.toInt() / 1000
+            seekBar.max = simpleExoplayer?.duration!!.toInt() / 1000
+        }
+/*        playProgressBar.progress = (exoPlayer?.currentPosition?.toInt() ?:0) / 1000
+        playProgressBar.max = (exoPlayer?.duration?.toInt() ?: 0) / 1000
+        playingTime.text = stringForTime(exoPlayer?.currentPosition?.toInt()?: 0)
+        totalTime.text = stringForTime(exoPlayer?.duration?.toInt()?: 0)
+        handler?.let {  } ?: kotlin.run {
+            handler = Handler()
+        }
+        handler?.post(object : Runnable {
+            override fun run() {
+                if (exoPlayer != null && isPlaying) {
+                    playProgressBar.max = exoPlayer?.duration?.toInt()?:0 / 1000
+                    val mCurrentPosition = exoPlayer?.currentPosition?.toInt()?:0 / 1000
+                    playProgressBar.progress = mCurrentPosition
+                    playingTime.text = stringForTime(exoPlayer?.currentPosition?.toInt()?:0)
+                    totalTime.text = stringForTime(exoPlayer?.duration?.toInt()?:0)
+                    handler?.postDelayed(this, 1000)
+                }
+            }
+        })*/
+    }
+
+    private fun setSeekBar() {
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {}
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                simpleExoplayer?.seekTo(seekBar?.progress!!.toLong())
+            }
+        })
+    }
+
+
+    private fun setTimer() {
+
+        runnable = object :Runnable{
+            override fun run() {
+                val durationSecond = (simpleExoplayer!!.duration / 1000).toInt()
+                val currentSecond = (simpleExoplayer!!.currentPosition / 1000).toInt()
+
+                tv_timeEnd.text = "$currentSecond/$durationSecond"
+                seekBar.max = durationSecond
+                seekBar.progress = currentSecond
+                handler.postDelayed(this, 1000)
+            }
+        }
+        handler.post(runnable)
+    }
+
+
+    private fun buildMediaSource(uri: Uri): MediaSource {
+        val dataSourceFactory = DefaultDataSourceFactory(
+            requireContext(),
+            Util.getUserAgent(requireContext(), "ExoplayerSample"),
+            DefaultBandwidthMeter()
+        )
         return ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
     }
 
     override fun onPause() {
         super.onPause()
         simpleExoplayer?.release()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        handler.removeCallbacks(runnable)
+
+        if (simpleExoplayer != null) {
+            simpleExoplayer?.release()
+            simpleExoplayer = null
+        }
     }
 }

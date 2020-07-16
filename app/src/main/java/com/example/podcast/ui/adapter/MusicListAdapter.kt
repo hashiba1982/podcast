@@ -21,7 +21,7 @@ class MusicListAdapter(context: Context, val adapterClickListener: OnAdapterClic
     var mDataSet: ArrayList<ContentFeed> = ArrayList()
 
     interface OnAdapterClickListener{
-        fun OnItemClick(view: View?, id: String)
+        fun OnItemClick(view: View?, position: Int)
     }
 
     fun swapDataSet(tempSet: ArrayList<ContentFeed>) {
@@ -42,7 +42,7 @@ class MusicListAdapter(context: Context, val adapterClickListener: OnAdapterClic
             adapterClick = adapterClickListener
 
             holder.itemView.setOnClickListener {
-                //adapterClick?.OnItemClick(it, mDataSet[position].id)
+                adapterClick?.OnItemClick(it, position)
             }
         }
 

@@ -7,17 +7,19 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
+import androidx.navigation.Navigator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.podcast.R
 import com.example.podcast.tools.loadUrl
 import com.example.podcast.ui.adapter.MusicListAdapter
 import com.example.podcast.vm.MusicListViewModel
 import kotlinx.android.synthetic.main.fragment_music_list.*
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MusicListFragment : Fragment() {
 
-    private val musicListViewModel:MusicListViewModel by viewModel()
+    private val musicListViewModel:MusicListViewModel by sharedViewModel()
 
     private var mAdapter:MusicListAdapter? = null
 
@@ -41,15 +43,13 @@ class MusicListFragment : Fragment() {
 
     private fun initView(){
         mAdapter = MusicListAdapter(requireContext(), object : MusicListAdapter.OnAdapterClickListener{
-            override fun OnItemClick(view: View?, id: String) {
- /*               val bundle = Bundle()
-                bundle.putString("cast_id", id)
-                Navigation.findNavController(view!!).navigate(R.id.action_navigation_home_to_musiclist, bundle)*/
+            override fun OnItemClick(view: View?, position: Int) {
+                musicListViewModel.selectedMusic = position
+                Navigation.findNavController(view!!).navigate(R.id.action_navigation_musiclist_to_musicplayer)
             }
         })
         rv_musicList.layoutManager = LinearLayoutManager(context)
         rv_musicList.adapter = mAdapter
-
     }
 
     private fun setObserver(){

@@ -6,17 +6,93 @@
 	android:layout_height="match_parent"
 	tools:context=".ui.HomeFragment">
 
-	<TextView
-		android:id="@+id/text_home"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginStart="8dp"
-		android:layout_marginTop="8dp"
-		android:layout_marginEnd="8dp"
-		android:textAlignment="center"
-		android:textSize="20sp"
-		app:layout_constraintBottom_toBottomOf="parent"
+	<ImageView
+		android:id="@+id/iv_castBigImage"
+		android:layout_width="200dp"
+		android:layout_height="200dp"
+		android:layout_marginTop="50dp"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+		app:layout_constraintTop_toTopOf="parent"
+		tools:src="@tools:sample/avatars" />
+
+	<SeekBar
+		android:id="@+id/seekBar"
+		style="@style/Base.Widget.AppCompat.SeekBar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="16dp"
+		android:layout_marginTop="24dp"
+		android:layout_marginEnd="16dp"
+		android:progressBackgroundTint="#FFFFFF"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/iv_castBigImage" />
+
+	<TextView
+		android:id="@+id/tv_timeStart"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="32dp"
+		android:layout_marginTop="8dp"
+		android:text="0:13"
+		android:textColor="@color/colorGray"
+		android:textSize="14sp"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+
+	<TextView
+		android:id="@+id/tv_timeEnd"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
+		android:layout_marginEnd="32dp"
+		android:text="33:33"
+		android:textColor="@color/colorGray"
+		android:textSize="14sp"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+
+	<TextView
+		android:id="@+id/tv_musicTitle"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="32dp"
+		android:layout_marginTop="60dp"
+		android:layout_marginEnd="32dp"
+		android:textColor="@color/colorWhite"
+		android:textSize="24sp"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+
+	<ImageView
+		android:id="@+id/iv_play"
+		android:layout_width="50dp"
+		android:layout_height="50dp"
+		android:layout_marginBottom="100dp"
+		android:src="@drawable/exo_controls_play"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent" />
+
+	<ImageView
+		android:id="@+id/iv_forword"
+		android:layout_width="50dp"
+		android:layout_height="50dp"
+		android:src="@drawable/exo_controls_fastforward"
+		app:layout_constraintBottom_toBottomOf="@+id/iv_play"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toEndOf="@+id/iv_play"
+		app:layout_constraintTop_toTopOf="@+id/iv_play" />
+
+	<ImageView
+		android:id="@+id/iv_back"
+		android:layout_width="50dp"
+		android:layout_height="50dp"
+		android:src="@drawable/exo_controls_rewind"
+		app:layout_constraintBottom_toBottomOf="@+id/iv_play"
+		app:layout_constraintEnd_toStartOf="@+id/iv_play"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="@+id/iv_play" />
 </androidx.constraintlayout.widget.ConstraintLayout>

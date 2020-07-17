@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import com.example.podcast.R
-import com.example.podcast.tools.debug
 import com.example.podcast.tools.loadUrl
 import com.example.podcast.vm.MusicListViewModel
 import com.google.android.exoplayer2.*
@@ -57,13 +56,12 @@ class MusicPlayerFragment : Fragment() {
         iv_castBigImage.loadUrl(musicListViewModel.collection.value!!.artworkUrl600)
 
         iv_play.setOnClickListener {
-            if (isPlaying) {
-                iv_play.setImageResource(R.drawable.exo_controls_play)
-                isPlaying = false
-            } else {
-                iv_play.setImageResource(R.drawable.exo_controls_pause)
-                isPlaying = true
+            if (isPlaying){
+                playMusic(false)
+            }else{
+                playMusic(true)
             }
+
         }
 
         iv_forword.setOnClickListener {
@@ -80,6 +78,17 @@ class MusicPlayerFragment : Fragment() {
                     simpleExoplayer!!.contentPosition - 30000
                 simpleExoplayer?.seekTo(pos)
             }
+        }
+    }
+
+    private fun playMusic(play:Boolean){
+        isPlaying = play
+        simpleExoplayer?.playWhenReady = play
+        simpleExoplayer?.playbackState
+        if (!play) {
+            iv_play.setImageResource(R.drawable.exo_controls_play)
+        } else {
+            iv_play.setImageResource(R.drawable.exo_controls_pause)
         }
     }
 
@@ -131,11 +140,14 @@ class MusicPlayerFragment : Fragment() {
                     Player.STATE_READY -> {
                         //progress_image?.visibility = View.GONE
                         //mVideoListener?.OnVideoReady()
-                        iv_play.setImageResource(R.drawable.exo_controls_pause)
-                        isPlaying = true
+                        if (!isPlaying){
+                            //playMusic(true)
+                            isPlaying = true
+                            iv_play.setImageResource(R.drawable.exo_controls_pause)
+                            setMusicTime()
 
-                        setMusicTime()
-                        setSeekBar()
+                        }
+
                     }
                     Player.STATE_ENDED -> {
                         //mVideoListener?.OnVideoFinish()
@@ -143,11 +155,14 @@ class MusicPlayerFragment : Fragment() {
                 }
             }
         })
+
+        initSeekBar()
     }
 
-    private fun setSeekBar() {
+    private fun initSeekBar() {
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (!fromUser) return
                 if (progress == 0 || seekBar?.max == 0) return
                 var pos = progress * 1000
                 simpleExoplayer?.seekTo(pos.toLong())

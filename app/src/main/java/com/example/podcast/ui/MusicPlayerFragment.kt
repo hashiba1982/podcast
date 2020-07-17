@@ -56,12 +56,7 @@ class MusicPlayerFragment : Fragment() {
         iv_castBigImage.loadUrl(musicListViewModel.collection.value!!.artworkUrl600)
 
         iv_play.setOnClickListener {
-            if (isPlaying){
-                playMusic(false)
-            }else{
-                playMusic(true)
-            }
-
+            playMusic()
         }
 
         iv_forword.setOnClickListener {
@@ -81,15 +76,17 @@ class MusicPlayerFragment : Fragment() {
         }
     }
 
-    private fun playMusic(play:Boolean){
-        isPlaying = play
-        simpleExoplayer?.playWhenReady = play
-        simpleExoplayer?.playbackState
-        if (!play) {
+    private fun playMusic(){
+
+        if (isPlaying) {
+            simpleExoplayer?.playWhenReady = false
             iv_play.setImageResource(R.drawable.exo_controls_play)
         } else {
+            simpleExoplayer?.playWhenReady = true
             iv_play.setImageResource(R.drawable.exo_controls_pause)
         }
+
+        simpleExoplayer?.playbackState
     }
 
     private fun initExoPlayer() {
@@ -140,13 +137,9 @@ class MusicPlayerFragment : Fragment() {
                     Player.STATE_READY -> {
                         //progress_image?.visibility = View.GONE
                         //mVideoListener?.OnVideoReady()
-                        if (!isPlaying){
-                            //playMusic(true)
-                            isPlaying = true
-                            iv_play.setImageResource(R.drawable.exo_controls_pause)
-                            setMusicTime()
-
-                        }
+                        isPlaying = !isPlaying
+                        iv_play.setImageResource(R.drawable.exo_controls_pause)
+                        setMusicTime()
 
                     }
                     Player.STATE_ENDED -> {

@@ -20,11 +20,6 @@
 		android:name="com.example.podcast.ui.MusicListFragment"
 		android:label="MusicList"
 		tools:layout="@layout/fragment_music_list" >
-		<argument android:name="cast_id"
-			app:argType="string"
-			app:nullable="true"
-			android:defaultValue=""/>
-
 		<action
 			android:id="@+id/action_navigation_musiclist_to_musicplayer"
 			app:destination="@id/fragment_musicPlayer" />

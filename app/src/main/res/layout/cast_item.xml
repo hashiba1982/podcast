@@ -1,144 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_horizontal">
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp">
 
-    <androidx.cardview.widget.CardView
+    <com.example.podcast.tools.SquareLayout
+        android:id="@+id/sl_imageBox"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="4dp"
-        android:background="@color/black"
-        app:cardBackgroundColor="@color/black"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="0dp">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/const_diaryBox"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tv_castTitle">
+        <ImageView
+            android:id="@+id/iv_castImage"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center">
+            android:layout_height="match_parent"
+            android:minWidth="170dp"
+            android:minHeight="170dp"
+            android:scaleType="centerCrop" />
+    </com.example.podcast.tools.SquareLayout>
 
-            <com.secretdiary.studio.model.SquareLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintBottom_toTopOf="@+id/ll_trace"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+    <TextView
+        android:id="@+id/tv_castTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/sl_imageBox"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textColor="@color/colorWhite"
+        android:textSize="16sp"/>
 
-                <ImageView
-                    android:id="@+id/iv_hotItemImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:minWidth="170dp"
-                    android:minHeight="170dp"
-                    android:scaleType="centerCrop" />
-
-            </com.secretdiary.studio.model.SquareLayout>
-
-            <ImageView
-                android:id="@+id/iv_bottomMask"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                app:layout_constraintBottom_toTopOf="@+id/ll_trace"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:srcCompat="@drawable/gradients_gray_transparent" />
-
-            <TextView
-                android:id="@+id/tv_newDiaryTag"
-                style="@style/SD_Text_White_12sp"
-                android:layout_width="54dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/new_diary_tag"
-                android:gravity="center"
-                android:paddingTop="1dp"
-                android:paddingBottom="1dp"
-                android:text="@string/sdtxt_028"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_diaryOption2"
-                style="@style/SD_Text_White_14sp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="4dp"
-                android:shadowColor="@color/black"
-                android:shadowDx="0"
-                android:shadowDy="1"
-                android:shadowRadius="3"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/tv_diaryOption1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_diaryOption1"
-                style="@style/SD_Text_White_14sp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:shadowColor="@color/black"
-                android:shadowDx="0"
-                android:shadowDy="1"
-                android:shadowRadius="3"
-                app:layout_constraintBottom_toTopOf="@+id/ll_trace"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <ProgressBar
-                android:id="@+id/progress_image"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <LinearLayout
-                android:id="@+id/ll_trace"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:background="@color/gray_6"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <ImageView
-                    android:id="@+id/iv_traceIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@mipmap/icon_plus" />
-
-                <TextView
-                    android:id="@+id/tv_traceState"
-                    style="@style/SD_Text_Brown_14"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/sdtxt_023" />
-
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.cardview.widget.CardView>
-</LinearLayout>
+    <TextView
+        android:id="@+id/tv_castSubTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_castTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="6dp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="@color/colorGray"
+        android:textSize="14sp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

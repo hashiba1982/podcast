@@ -1,5 +1,6 @@
 package com.example.podcast.ui
 
+import android.app.ProgressDialog
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -34,6 +35,7 @@ class MusicPlayerFragment : Fragment() {
     private var isPlaying: Boolean = false
     private var handler: Handler = Handler()
     private var runnable: Runnable? = null
+    private var progressDialog: ProgressDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,6 +51,7 @@ class MusicPlayerFragment : Fragment() {
 
         initView()
         initExoPlayer()
+        initSeekBar()
     }
 
     private fun initView() {
@@ -60,13 +63,13 @@ class MusicPlayerFragment : Fragment() {
         }
 
         iv_forword.setOnClickListener {
-            if (isPlaying) {
+            if (simpleExoplayer != null) {
                 simpleExoplayer?.seekTo(simpleExoplayer!!.contentPosition + 30000)
             }
         }
 
         iv_back.setOnClickListener {
-            if (isPlaying) {
+            if (simpleExoplayer != null) {
                 var pos = if (simpleExoplayer!!.contentPosition - 30000 < 0)
                     0
                 else
@@ -90,6 +93,8 @@ class MusicPlayerFragment : Fragment() {
     }
 
     private fun initExoPlayer() {
+        progressDialog = ProgressDialog.show(requireContext(), "", "Loading...")
+
         simpleExoplayer = ExoPlayerFactory.newSimpleInstance(
             DefaultRenderersFactory(context),
             DefaultTrackSelector(AdaptiveTrackSelection.Factory(DefaultBandwidthMeter())),
@@ -116,7 +121,9 @@ class MusicPlayerFragment : Fragment() {
             }
 
             override fun onPlayerError(error: ExoPlaybackException?) {
-                //mVideoListener?.OnVideoError()
+                if (progressDialog != null){
+                    progressDialog?.dismiss()
+                }
             }
 
             override fun onLoadingChanged(isLoading: Boolean) {}
@@ -132,24 +139,23 @@ class MusicPlayerFragment : Fragment() {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 when (playbackState) {
                     Player.STATE_BUFFERING -> {
-                        //progress_image?.visibility = View.VISIBLE
+
                     }
                     Player.STATE_READY -> {
-                        //progress_image?.visibility = View.GONE
-                        //mVideoListener?.OnVideoReady()
+                        if (progressDialog != null){
+                            progressDialog?.dismiss()
+                        }
                         isPlaying = !isPlaying
                         iv_play.setImageResource(R.drawable.exo_controls_pause)
                         setMusicTime()
-
                     }
                     Player.STATE_ENDED -> {
-                        //mVideoListener?.OnVideoFinish()
+
                     }
                 }
             }
         })
 
-        initSeekBar()
     }
 
     private fun initSeekBar() {
@@ -225,6 +231,11 @@ class MusicPlayerFragment : Fragment() {
 
         handler.removeCallbacks(runnable)
 
+        if (progressDialog != null){
+            progressDialog?.dismiss()
+            progressDialog = null
+        }
+
         if (simpleExoplayer != null) {
             simpleExoplayer?.playWhenReady = false
         }
@@ -234,6 +245,11 @@ class MusicPlayerFragment : Fragment() {
         super.onDestroy()
 
         handler.removeCallbacks(runnable)
+
+        if (progressDialog != null){
+            progressDialog?.dismiss()
+            progressDialog = null
+        }
 
         if (simpleExoplayer != null) {
             simpleExoplayer?.release()

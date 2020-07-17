@@ -37,7 +37,7 @@ open class MyExtension()
 
 fun debug(text: Any) {
     text?.let {
-        Log.w("SDOut", text.toString())
+        Log.w("JohnOut", text.toString())
     }
 }
 

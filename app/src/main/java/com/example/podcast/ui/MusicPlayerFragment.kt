@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import com.example.podcast.R
+import com.example.podcast.tools.debug
 import com.example.podcast.tools.loadUrl
 import com.example.podcast.vm.MusicListViewModel
 import com.google.android.exoplayer2.*
@@ -105,8 +106,8 @@ class MusicPlayerFragment : Fragment() {
 
         var mediaSource =
             buildMediaSource(Uri.parse(musicListViewModel.getSelectedMusic().contentUrl))
-        var loopingSource = LoopingMediaSource(mediaSource)
-        simpleExoplayer?.prepare(loopingSource)
+        //var loopingSource = LoopingMediaSource(mediaSource)
+        simpleExoplayer?.prepare(mediaSource)
 
         simpleExoplayer?.playWhenReady = true
         simpleExoplayer?.addListener(object : Player.EventListener {
@@ -150,12 +151,24 @@ class MusicPlayerFragment : Fragment() {
                         setMusicTime()
                     }
                     Player.STATE_ENDED -> {
-
+                        loadNextMusic()
                     }
                 }
             }
         })
 
+    }
+
+    private fun loadNextMusic(){
+        var nextMusic = musicListViewModel.getNextMusic()
+
+        tv_musicTitle.text = nextMusic.title
+
+        var mediaSource =
+            buildMediaSource(Uri.parse(nextMusic.contentUrl))
+        simpleExoplayer?.prepare(mediaSource)
+
+        simpleExoplayer?.playWhenReady = true
     }
 
     private fun initSeekBar() {

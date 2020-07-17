@@ -30,4 +30,10 @@ class MusicListViewModel() : BaseViewModel() {
     fun getSelectedMusic():ContentFeed{
         return collection.value!!.contentFeed[selectedMusic]
     }
+
+    fun getNextMusic():ContentFeed{
+        selectedMusic++
+        selectedMusic = if (selectedMusic == collection.value!!.contentFeed.size) 0 else selectedMusic
+        return collection.value!!.contentFeed[selectedMusic]
+    }
 }

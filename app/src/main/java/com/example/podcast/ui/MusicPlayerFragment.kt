@@ -34,7 +34,7 @@ class MusicPlayerFragment : Fragment() {
     private var simpleExoplayer: SimpleExoPlayer? = null
     private var isPlaying: Boolean = false
     private var handler: Handler = Handler()
-    private var runnable:Runnable? = null
+    private var runnable: Runnable? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,6 +63,22 @@ class MusicPlayerFragment : Fragment() {
             } else {
                 iv_play.setImageResource(R.drawable.exo_controls_pause)
                 isPlaying = true
+            }
+        }
+
+        iv_forword.setOnClickListener {
+            if (isPlaying) {
+                simpleExoplayer?.seekTo(simpleExoplayer!!.contentPosition + 30000)
+            }
+        }
+
+        iv_back.setOnClickListener {
+            if (isPlaying) {
+                var pos = if (simpleExoplayer!!.contentPosition - 30000 < 0)
+                    0
+                else
+                    simpleExoplayer!!.contentPosition - 30000
+                simpleExoplayer?.seekTo(pos)
             }
         }
     }
@@ -147,13 +163,10 @@ class MusicPlayerFragment : Fragment() {
 
     private fun makeTimeString(secs: Int): String? {
 
-
         var sFormatBuilder = StringBuilder()
         var sFormatter = Formatter(sFormatBuilder, Locale.getDefault())
 
         val durationformat = getString(R.string.conver_time)
-
-        //var totalSec = secs / 1000
 
         var sec = secs / 3600 // 秒
         var minute = secs % 3600 / 60 // 分
@@ -164,9 +177,9 @@ class MusicPlayerFragment : Fragment() {
 
     private fun setMusicTime() {
 
-        runnable = object :Runnable{
+        runnable = object : Runnable {
             override fun run() {
-                if (simpleExoplayer != null){
+                if (simpleExoplayer != null) {
                     val durationSecond = (simpleExoplayer!!.duration / 1000).toInt()
                     val currentSecond = (simpleExoplayer!!.currentPosition / 1000).toInt()
 
